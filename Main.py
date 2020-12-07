@@ -1,7 +1,15 @@
 import selenium
 from selenium import webdriver as Fire
+from bs4 import BeautifulSoup as bs
 import time
 driver = Fire.Firefox()
+def like_pic():
+    time.sleep(2)
+    like = driver.find_element_by_class_name('fr66n')
+    soup = bs(like.get_attribute('innerHTML'),'html.parser')
+    if(soup.find('svg')['aria-label'] == 'Like'):
+        like.click()
+    time.sleep(2)
 def login():
     driver.get("https://www.instagram.com")
     time.sleep(3)
@@ -35,11 +43,29 @@ def likeall(accountname):
     account = driver.find_element_by_xpath('/html/body/div[1]/section/nav/div[2]/div/div/div[2]/div[4]/div/a[1]') #finds first account in dropdown list
     account.click()
     time.sleep(4)
+    #follow = driver.find_element_by_class_name("_5f5mN       jIbKX  _6VtSN     yZn4P   ")
+    #follow.click()
+    #time.sleep(2)
     pics = driver.find_elements_by_tag_name('a') #finds all clickable articles
-    print(pics)
     time.sleep(2)
-    pics[1].click() #clicks first picture
-
+    pics = [elem.get_attribute('href') for elem in pics if '.com/p/' in elem.get_attribute('href')]
+    
+    time.sleep(2)
+    
+    #liking loop cycle starts here
+    for element in pics:
+        driver.get(element)
+        time.sleep(5)
+        try:
+            like_pic()
+        except:
+            print("not possible")
+        
+        time.sleep(2)
+    driver.get("https://instagram.com")
+    
+        
+    print("Done Liking")
 if __name__ == "__main__":
     login()
-    likeall("jeff.metro")
+    likeall("jeff metro")
